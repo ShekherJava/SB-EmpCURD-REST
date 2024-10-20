@@ -9,7 +9,8 @@ public interface EmpService {
 	Employee fetchEmpById(int empno);
 	List<Employee> fetchAll();
 	String addEmp(Employee emp);
-	String updateEmp(Employee emp);
+	Employee updateEmp(Employee emp);
 	void deleteEmp(int empno);
+	Employee partialUpdate(double sal, int empno);
 
 }

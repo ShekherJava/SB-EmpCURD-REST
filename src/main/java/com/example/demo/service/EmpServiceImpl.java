@@ -41,19 +41,28 @@ public class EmpServiceImpl implements EmpService {
 	}
 
 	@Override
-	public String updateEmp(Employee emp) {
+	public Employee updateEmp(Employee emp) {
 		try {
-			repo.save(emp);
-			return "Employee is updated successfully";
+			Employee e = repo.save(emp);
+			return e;
 		}
 		catch(Exception ex) {
-			return "Employee does not exist";
+			return null;
 		}
 	}
 
 	@Override
 	public void deleteEmp(int empno) {
 		repo.deleteById(empno);
+	}
+	
+	@Override
+	public Employee partialUpdate(double sal, int empno) {
+		int count = repo.partialUpdate(sal, empno);
+		if(count == 0)
+			return null;
+		else
+			return repo.findById(empno).get();
 	}
 
 }
