@@ -10,3 +10,6 @@ spring:
     banner-mode: 'off'
   jpa:
     show-sql: true	
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher

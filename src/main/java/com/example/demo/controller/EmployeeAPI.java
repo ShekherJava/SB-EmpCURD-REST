@@ -19,6 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.Entity.Employee;
 import com.example.demo.service.EmpService;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag( name ="employees", description = "Operations related to employees")
 @RestController
 @RequestMapping("/api")
 public class EmployeeAPI {
@@ -26,11 +34,22 @@ public class EmployeeAPI {
 	@Autowired
 	EmpService service;
 	
+	@GetMapping( value = "/hello")
+	public String sayHello() {
+		return "hello";
+	}
+	
+	@Operation(summary = "Get employee by ID", description = "Fetch employee's details by its ID")
+	@ApiResponses(
+			value = {
+					@ApiResponse(responseCode = "200", description = " Employee successfully retrieved"),
+					@ApiResponse(responseCode = "404", description = "Employee not found")
+			})
 	//produces: defines the type of data, also called media type,
 	//the method will return in the response.
 	@GetMapping( value = "/{id}", produces = "application/json")
 	@ResponseStatus(HttpStatus.OK)
-	public Employee getEmployeeById(@PathVariable int id) {
+	public Employee getEmployeeById(@Parameter(description="ID of the employee to retrieve") @PathVariable int id) {
 		return service.fetchEmpById(id);
 	}
 	
@@ -40,6 +59,7 @@ public class EmployeeAPI {
 		return service.fetchAll();
 	}
 	
+	@Operation(summary = "Create a new employee", description = "creates a new employee by accepting data in json format")
 	//consumes: defines the type of data, the method can accept
 	//in the request body
 	@PostMapping(value = "/create", consumes = "application/json" )
@@ -48,7 +68,7 @@ public class EmployeeAPI {
 		return service.addEmp(e);
 	}
 	
-	@PutMapping( value = "/{id}", consumes = "application/json")
+	@PutMapping( value = "/update/{id}", consumes = "application/json")
 	public ResponseEntity<Employee> updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee) {
 		Employee existingEmployee = service.fetchEmpById(id);
 		if ( existingEmployee == null) {
@@ -61,7 +81,7 @@ public class EmployeeAPI {
 		return new ResponseEntity<>(e, HttpStatus.OK);	
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/patch/{id}")
 	public ResponseEntity<Employee> partialUpdateEmployee(@PathVariable int id, @RequestBody Map<String, Object> updates) {
 		double salTobeUpdated = (double) updates.get("sal");
 		Employee e = service.partialUpdate(salTobeUpdated, id);
@@ -70,6 +90,12 @@ public class EmployeeAPI {
 		}
 		return new ResponseEntity<>(e, HttpStatus.OK);
 		
+	}
+	
+	@Hidden
+	@GetMapping("/internal")
+	public String internalEndpoint() {
+		return "This is internal endpoint";
 	}
 
 }
